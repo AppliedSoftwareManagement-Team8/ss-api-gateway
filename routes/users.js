@@ -13,6 +13,7 @@ router.post('/authenticate', function(req, res) {
   }, function(error, response, body){
     if (!error && response.statusCode == 200) {
       var user = JSON.parse(body);
+      //TODO change email extention in user service
       var token = jwt.sign(user, app.get('superSecret'), {
         expiresInMinutes: 1440 // expires in 24 hours
       });
