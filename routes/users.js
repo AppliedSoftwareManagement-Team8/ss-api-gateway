@@ -104,4 +104,46 @@ router.get('/:id', function (req, res) {
     });
 });
 
+/* Delete a user */
+router.delete('/:id', function (req, res) {
+    request.del(config.ss_user_service + '/api/user/delete/' + req.params.id, function (error, response, body) {
+        if (error)
+            res.status(error.status || 500).json(error);
+        if (body.hasOwnProperty('error'))
+            res.status(body.status || 500).json(body);
+        else
+            res.status(200).json(body);
+    });
+});
+
+/* Update Users' account information */
+router.put('/', function (req, res) {
+    request({
+        url: config.ss_user_service + '/api/user/update/',
+        qs: {from: 'api-gateway', time: +new Date()},
+        method: 'PUT',
+        json: true,
+        body: req.body
+    }, function (error, response, body) {
+        if (error)
+            res.status(error.error.status || 500).json(error);
+        else if (body.hasOwnProperty('error'))
+            res.status(body.status || 500).json(body.error);
+        else {
+            var user = body;
+            var token = jwt.sign(user, config.secret, {
+                expiresIn: 3600 // seconds
+            });
+            user.token = token;
+            res.status(200).json(user);
+        }
+    });
+});
+
+/* Block a User*/
+router.post('/block/:id', function(req, res) {
+    //TODO
+    res.status(200).json({ message: "In progress!"});
+});
+
 module.exports = router;

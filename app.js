@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var config = require('./config');
 var users = require('./routes/users');
 var categories = require('./routes/categories');
+var ratings = require('./routes/ratings');
 
 var app = express();
 
@@ -16,6 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('superSecret', config.secret);
 app.use('/api/users', users);
 app.use('/api/categories', categories);
+app.use('/api/ratings', ratings);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
