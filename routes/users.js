@@ -1,10 +1,10 @@
-var express = require('express');
-var request = require('request');
-var jwt = require('jsonwebtoken');
-var crypto = require('crypto');
-var config = require('../config');
-var authorize = require('../authorization');
-var router = express.Router();
+var express = require('express'),
+    request = require('request'),
+    jwt = require('jsonwebtoken'),
+    crypto = require('crypto'),
+    config = require('../config'),
+    authorize = require('../authorization'),
+    router = express.Router();
 
 /* Register a new user */
 router.post('/register', function (req, res) {
@@ -17,13 +17,10 @@ router.post('/register', function (req, res) {
         body: req.body
     }, function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        else if (body.hasOwnProperty('error'))
-            res.status(body.status || 500).json(body);
-        else {
-            var user = body;
-            res.status(201, "Created").json(user);
-        }
+            return res.status(error.status || 500).json(error);
+        var user = body;
+        res.status(201, "Created").json(user);
+
     });
 });
 
@@ -37,17 +34,13 @@ router.post('/activate', function (req, res) {
         body: req.body
     }, function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        else if (body.hasOwnProperty('error'))
-            res.status(body.status || 500).json(body);
-        else {
-            var user = body;
-            var token = jwt.sign(user, config.secret, {
-                expiresIn: 3600 // seconds
-            });
-            user.token = token;
-            res.status(200).json(user);
-        }
+            return res.status(error.status || 500).json(error);
+        var user = body;
+        var token = jwt.sign(user, config.secret, {
+            expiresIn: 3600 // seconds
+        });
+        user.token = token;
+        res.status(200).json(user);
     });
 });
 
@@ -62,17 +55,13 @@ router.post('/authenticate', function (req, res) {
         body: req.body
     }, function (error, response, body) {
         if (error)
-            res.status(error.error.status || 500).json(error);
-        else if (body.hasOwnProperty('error'))
-            res.status(body.status || 500).json(body.error);
-        else {
-            var user = body;
-            var token = jwt.sign(user, config.secret, {
-                expiresIn: 3600 // seconds
-            });
-            user.token = token;
-            res.status(200).json(user);
-        }
+            return res.status(error.status || 500).json(error);
+        var user = body;
+        var token = jwt.sign(user, config.secret, {
+            expiresIn: 3600 // seconds
+        });
+        user.token = token;
+        res.status(200).json(user);
     });
 });
 
@@ -83,11 +72,8 @@ router.use(authorize);
 router.get('/', function (req, res) {
     request(config.ss_user_service + '/api/users', function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        if (body.hasOwnProperty('error'))
-            res.status(body.status || 500).json(body);
-        else
-            res.status(200).json(body);
+            return res.status(error.status || 500).json(error);
+        res.status(200).json(body);
     });
 });
 
@@ -95,11 +81,8 @@ router.get('/', function (req, res) {
 router.get('/:id', function (req, res) {
     request(config.ss_user_service + '/api/users/' + req.params.id, function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        if (body.hasOwnProperty('error'))
-            res.status(body.status || 500).json(body);
-        else
-            res.status(200).json(body);
+            return res.status(error.status || 500).json(error);
+        res.status(200).json(body);
     });
 });
 
@@ -107,11 +90,8 @@ router.get('/:id', function (req, res) {
 router.delete('/:id', function (req, res) {
     request.del(config.ss_user_service + '/api/users/delete/' + req.params.id, function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        if (body.hasOwnProperty('error'))
-            res.status(body.status || 500).json(body);
-        else
-            res.status(200).json(body);
+            return res.status(error.status || 500).json(error);
+        res.status(200).json(body);
     });
 });
 
@@ -126,24 +106,20 @@ router.put('/', function (req, res) {
         body: req.body
     }, function (error, response, body) {
         if (error)
-            res.status(error.error.status || 500).json(error);
-        else if (body.hasOwnProperty('error'))
-            res.status(body.status || 500).json(body.error);
-        else {
-            var user = body;
-            var token = jwt.sign(user, config.secret, {
-                expiresIn: 3600 // seconds
-            });
-            user.token = token;
-            res.status(200).json(user);
-        }
+            return res.status(error.status || 500).json(error);
+        var user = body;
+        var token = jwt.sign(user, config.secret, {
+            expiresIn: 3600 // seconds
+        });
+        user.token = token;
+        res.status(200).json(user);
     });
 });
 
 /* Block a User*/
-router.post('/block/:id', function(req, res) {
+router.post('/block/:id', function (req, res) {
     //TODO
-    res.status(200).json({ message: "In progress!"});
+    res.status(200).json({message: "In progress!"});
 });
 
 module.exports = router;

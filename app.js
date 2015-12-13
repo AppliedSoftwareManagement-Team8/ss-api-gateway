@@ -1,13 +1,13 @@
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
-var config = require('./config');
-var users = require('./routes/users');
-var categories = require('./routes/categories');
-var ratings = require('./routes/ratings');
-
-var app = express();
+var express = require('express'),
+    path = require('path'),
+    logger = require('morgan'),
+    bodyParser = require('body-parser'),
+    config = require('./config'),
+    users = require('./routes/users'),
+    products = require('./routes/products'),
+    categories = require('./routes/categories'),
+    ratings = require('./routes/ratings'),
+    app = express();
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -16,6 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('superSecret', config.secret);
 app.use('/api/users', users);
+app.use('/api/products', products);
 app.use('/api/categories', categories);
 app.use('/api/ratings', ratings);
 

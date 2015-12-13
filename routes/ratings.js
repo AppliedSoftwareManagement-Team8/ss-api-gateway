@@ -1,8 +1,8 @@
-var express = require('express');
-var request = require('request');
-var config = require('../config');
-var authorize = require('../authorization');
-var router = express.Router();
+var express = require('express'),
+    request = require('request'),
+    config = require('../config'),
+    authorize = require('../authorization'),
+    router = express.Router();
 
 // route middleware to verify the token
 router.use(authorize);
@@ -11,11 +11,8 @@ router.use(authorize);
 router.get('/', function (req, res) {
     request(config.ss_rating_service + '/public/api/ratings', function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        if (body.hasOwnProperty('error'))
-            res.status(response.status || 500).json(body);
-        else
-            res.status(200).json(JSON.parse(body));
+            return res.status(error.status || 500).json(error);
+        res.status(200).json(JSON.parse(body));
     });
 });
 
@@ -23,11 +20,8 @@ router.get('/', function (req, res) {
 router.get('/:id', function (req, res) {
     request(config.ss_rating_service + '/public/api/ratings/' + req.params.id, function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        if (body.hasOwnProperty('error'))
-            res.status(response.status || 500).json(body);
-        else
-            res.status(200).json(JSON.parse(body));
+            return res.status(error.status || 500).json(error);
+        res.status(200).json(JSON.parse(body));
     });
 });
 
@@ -35,11 +29,8 @@ router.get('/:id', function (req, res) {
 router.get('/pub/:id', function (req, res) {
     request(config.ss_rating_service + '/public/api/ratings/publishers/' + req.params.id, function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        if (body.hasOwnProperty('error'))
-            res.status(response.status || 500).json(body);
-        else
-            res.status(200).json(JSON.parse(body));
+            return res.status(error.status || 500).json(error);
+        res.status(200).json(JSON.parse(body));
     });
 });
 
@@ -47,11 +38,8 @@ router.get('/pub/:id', function (req, res) {
 router.get('/rec/:id', function (req, res) {
     request(config.ss_rating_service + '/public/api/ratings/recipients/' + req.params.id, function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        if (body.hasOwnProperty('error'))
-            res.status(response.status || 500).json(body);
-        else
-            res.status(200).json(JSON.parse(body));
+            return res.status(error.status || 500).json(error);
+        res.status(200).json(JSON.parse(body));
     });
 });
 
@@ -65,13 +53,9 @@ router.post('/create', function (req, res) {
         body: req.body
     }, function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        else if (body.hasOwnProperty('error'))
-            res.status(response.status || 500).json(body);
-        else {
-            var user = JSON.parse(body);
-            res.status(201, "Created").json(user);
-        }
+            return res.status(error.status || 500).json(error);
+        var user = JSON.parse(body);
+        res.status(201, "Created").json(user);
     });
 });
 
@@ -79,11 +63,8 @@ router.post('/create', function (req, res) {
 router.delete('/:id', function (req, res) {
     request.del(config.ss_rating_service + '/public/api/ratings/delete/' + req.params.id, function (error, response, body) {
         if (error)
-            res.status(error.status || 500).json(error);
-        if (body.hasOwnProperty('error'))
-            res.status(response.status || 500).json(body);
-        else
-            res.status(200).json(JSON.parse(body));
+            return res.status(error.status || 500).json(error);
+        res.status(200).json(JSON.parse(body));
     });
 });
 
