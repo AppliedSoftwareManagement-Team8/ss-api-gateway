@@ -6,6 +6,7 @@ var config = require('../config');
 var authorize = require('../authorization');
 var router = express.Router();
 
+/* Register a new user */
 router.post('/register', function (req, res) {
     req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
     request({
@@ -17,7 +18,7 @@ router.post('/register', function (req, res) {
     }, function (error, response, body) {
         if (error)
             res.status(error.status || 500).json(error);
-        else if (body.error)
+        else if (body.hasOwnProperty('error'))
             res.status(body.status || 500).json(body);
         else {
             var user = body;
@@ -26,6 +27,7 @@ router.post('/register', function (req, res) {
     });
 });
 
+/* Activate user's account */
 router.post('/activate', function (req, res) {
     req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
     request({
@@ -37,7 +39,7 @@ router.post('/activate', function (req, res) {
     }, function (error, response, body) {
         if (error)
             res.status(error.status || 500).json(error);
-        else if (body.error)
+        else if (body.hasOwnProperty('error'))
             res.status(body.status || 500).json(body);
         else {
             var user = body;
@@ -50,6 +52,7 @@ router.post('/activate', function (req, res) {
     });
 });
 
+/* Authenticate user */
 router.post('/authenticate', function (req, res) {
     req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
     request({
@@ -61,7 +64,7 @@ router.post('/authenticate', function (req, res) {
     }, function (error, response, body) {
         if (error)
             res.status(error.error.status || 500).json(error);
-        else if (body.error)
+        else if (body.hasOwnProperty('error'))
             res.status(body.status || 500).json(body.error);
         else {
             var user = body;
@@ -82,19 +85,19 @@ router.get('/', function (req, res) {
     request(config.ss_user_service + '/api/user', function (error, response, body) {
         if (error)
             res.status(error.status || 500).json(error);
-        if (body.error)
+        if (body.hasOwnProperty('error'))
             res.status(body.status || 500).json(body);
         else
             res.status(200).json(body);
     });
 });
 
-/* GET a single user by ID */
+/* GET single user by ID */
 router.get('/:id', function (req, res) {
     request(config.ss_user_service + '/api/user/' + req.params.id, function (error, response, body) {
         if (error)
             res.status(error.status || 500).json(error);
-        if (body.error)
+        if (body.hasOwnProperty('error'))
             res.status(body.status || 500).json(body);
         else
             res.status(200).json(body);
