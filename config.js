@@ -3,7 +3,7 @@
  */
 
 module.exports = {
-
-    'secret': 'wEg@+YyNZe96am^F2GWcj=#ekn=7q%9JjfdfcRZd5==58XrVT6#*Jj8#F4?B9$DjVG8^HW'
-
+    'secret'    : 'wEg@+YyNZe96am^F2GWcj=#ekn=7qm^F2JjfdfcRZd5==58XrVT6#*Jj8#F4?B9$DjVG8^HW',
+    'hashKey'      : 'm^F2m^F2Ze#*Jj8#F4?B9',
+    'ss_user_service': 'http://localhost:8080'
 };

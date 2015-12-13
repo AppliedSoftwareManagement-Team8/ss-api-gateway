@@ -1,94 +1,104 @@
 var express = require('express');
 var request = require('request');
 var jwt = require('jsonwebtoken');
+var crypto = require('crypto');
+var config = require('../config');
 var authorize = require('../authorization');
 var router = express.Router();
 
-router.post('/authenticate', function(req, res) {
-  request({
-    url: 'http://localhost:8080/api/user/authenticate',
-    qs: {from: 'api-gateway', time: +new Date()},
-    method: 'POST',
-    json: JSON.parse(req.body)
-  }, function(error, response, body){
-    if (!error && response.statusCode == 200) {
-      var user = JSON.parse(body);
-      //TODO change email extention in user service
-      var token = jwt.sign(user, app.get('superSecret'), {
-        expiresInMinutes: 1440 // expires in 24 hours
-      });
-      user.token = token;
-      res.json(user);
-    } else {
-      res.json( {
-        success : false,
-        message: 'Authentication failed!'
-      } );
-    }
-  });
+router.post('/register', function (req, res) {
+    req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
+    request({
+        url: config.ss_user_service + '/api/user/register',
+        qs: {from: 'api-gateway', time: +new Date()},
+        method: 'POST',
+        json: true,
+        body: req.body
+    }, function (error, response, body) {
+        if (error)
+            res.status(error.status || 500).json(error);
+        else if (body.error)
+            res.status(body.status || 500).json(body);
+        else {
+            var user = body;
+            res.status(201, "Created").json(user);
+        }
+    });
 });
 
-router.post('/register', function(req, res) {
-  request({
-    url: 'http://localhost:8080/api/user/register',
-    qs: {from: 'api-gateway', time: +new Date()},
-    method: 'POST',
-    json: JSON.parse(req.body)
-  }, function(error, response, body){
-    if (!error && response.statusCode == 201) {
-      var user = JSON.parse(body);
-      res.json(user);
-    } else {
-      res.json( {
-        success : false,
-        message: 'Registration failed!'
-      } );
-    }
-  });
+router.post('/activate', function (req, res) {
+    req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
+    request({
+        url: config.ss_user_service + '/api/user/activate',
+        qs: {from: 'api-gateway', time: +new Date()},
+        method: 'POST',
+        json: true,
+        body: req.body
+    }, function (error, response, body) {
+        if (error)
+            res.status(error.status || 500).json(error);
+        else if (body.error)
+            res.status(body.status || 500).json(body);
+        else {
+            var user = body;
+            var token = jwt.sign(user, config.secret, {
+                expiresIn: 3600 // seconds
+            });
+            user.token = token;
+            res.status(200).json(user);
+        }
+    });
 });
 
-router.post('/activate', function(req, res) {
-  request({
-    url: 'http://localhost:8080/api/user/activate',
-    qs: {from: 'api-gateway', time: +new Date()},
-    method: 'POST',
-    json: JSON.parse(req.body)
-  }, function(error, response, body){
-    if (!error && response.statusCode == 200) {
-      var user = JSON.parse(body);
-      var token = jwt.sign(user, app.get('superSecret'), {
-        expiresInMinutes: 1440 // expires in 24 hours
-      });
-      user.token = token;
-      res.json(user);
-    } else {
-      res.json( {
-        success : false,
-        message: 'Registration failed!'
-      } );
-    }
-  });
+router.post('/authenticate', function (req, res) {
+    req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
+    request({
+        url: config.ss_user_service + '/api/user/authenticate',
+        qs: {from: 'api-gateway', time: +new Date()},
+        method: 'POST',
+        json: true,
+        body: req.body
+    }, function (error, response, body) {
+        if (error)
+            res.status(error.error.status || 500).json(error);
+        else if (body.error)
+            res.status(body.status || 500).json(body.error);
+        else {
+            var user = body;
+            var token = jwt.sign(user, config.secret, {
+                expiresIn: 3600 // seconds
+            });
+            user.token = token;
+            res.status(200).json(user);
+        }
+    });
 });
 
-// route middleware to verify a token
+// route middleware to verify the token
 router.use(authorize);
 
 /* GET users listing. */
-router.get('/', function(req, res) {
-  request('http://localhost:8080/api/user', function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      res.json(JSON.parse(body));
-    }
-  });
+router.get('/', function (req, res) {
+    request(config.ss_user_service + '/api/user', function (error, response, body) {
+        if (error)
+            res.status(error.status || 500).json(error);
+        if (body.error)
+            res.status(body.status || 500).json(body);
+        else
+            res.status(200).json(body);
+    });
 });
 
 /* GET a single user by ID */
-router.get('/:id', function(req, res) {
-  request('http://localhost:8080/api/user/' + req.params.id, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      res.json(JSON.parse(body));
-    }
-  });
+router.get('/:id', function (req, res) {
+    request(config.ss_user_service + '/api/user/' + req.params.id, function (error, response, body) {
+        if (error)
+            res.status(error.status || 500).json(error);
+        if (body.error)
+            res.status(body.status || 500).json(body);
+        else
+            res.status(200).json(body);
+    });
 });
 
 module.exports = router;
