@@ -10,7 +10,7 @@ var router = express.Router();
 router.post('/register', function (req, res) {
     req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
     request({
-        url: config.ss_user_service + '/api/user/register',
+        url: config.ss_user_service + '/api/users/register',
         qs: {from: 'api-gateway', time: +new Date()},
         method: 'POST',
         json: true,
@@ -29,9 +29,8 @@ router.post('/register', function (req, res) {
 
 /* Activate user's account */
 router.post('/activate', function (req, res) {
-    req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
     request({
-        url: config.ss_user_service + '/api/user/activate',
+        url: config.ss_user_service + '/api/users/activate',
         qs: {from: 'api-gateway', time: +new Date()},
         method: 'POST',
         json: true,
@@ -56,7 +55,7 @@ router.post('/activate', function (req, res) {
 router.post('/authenticate', function (req, res) {
     req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
     request({
-        url: config.ss_user_service + '/api/user/authenticate',
+        url: config.ss_user_service + '/api/users/authenticate',
         qs: {from: 'api-gateway', time: +new Date()},
         method: 'POST',
         json: true,
@@ -82,7 +81,7 @@ router.use(authorize);
 
 /* GET users listing. */
 router.get('/', function (req, res) {
-    request(config.ss_user_service + '/api/user', function (error, response, body) {
+    request(config.ss_user_service + '/api/users', function (error, response, body) {
         if (error)
             res.status(error.status || 500).json(error);
         if (body.hasOwnProperty('error'))
@@ -94,7 +93,7 @@ router.get('/', function (req, res) {
 
 /* GET single user by ID */
 router.get('/:id', function (req, res) {
-    request(config.ss_user_service + '/api/user/' + req.params.id, function (error, response, body) {
+    request(config.ss_user_service + '/api/users/' + req.params.id, function (error, response, body) {
         if (error)
             res.status(error.status || 500).json(error);
         if (body.hasOwnProperty('error'))
@@ -106,7 +105,7 @@ router.get('/:id', function (req, res) {
 
 /* Delete a user */
 router.delete('/:id', function (req, res) {
-    request.del(config.ss_user_service + '/api/user/delete/' + req.params.id, function (error, response, body) {
+    request.del(config.ss_user_service + '/api/users/delete/' + req.params.id, function (error, response, body) {
         if (error)
             res.status(error.status || 500).json(error);
         if (body.hasOwnProperty('error'))
@@ -118,8 +117,9 @@ router.delete('/:id', function (req, res) {
 
 /* Update Users' account information */
 router.put('/', function (req, res) {
+    if (req.body.password) req.body.password = crypto.createHmac('sha512', config.hashKey).update(req.body.password).digest('hex');
     request({
-        url: config.ss_user_service + '/api/user/update/',
+        url: config.ss_user_service + '/api/users/update/',
         qs: {from: 'api-gateway', time: +new Date()},
         method: 'PUT',
         json: true,

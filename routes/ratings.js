@@ -5,7 +5,7 @@ var authorize = require('../authorization');
 var router = express.Router();
 
 // route middleware to verify the token
-//router.use(authorize);
+router.use(authorize);
 
 /* Get all ratings */
 router.get('/', function (req, res) {
