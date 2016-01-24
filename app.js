@@ -1,5 +1,4 @@
 var express = require('express'),
-    path = require('path'),
     logger = require('morgan'),
     bodyParser = require('body-parser'),
     config = require('./config'),
@@ -7,18 +6,23 @@ var express = require('express'),
     products = require('./routes/products'),
     categories = require('./routes/categories'),
     ratings = require('./routes/ratings'),
+    images = require('./routes/images'),
+    bids = require('./routes/bids'),
+    cors = require('cors'),
     app = express();
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('superSecret', config.secret);
 app.use('/api/users', users);
 app.use('/api/products', products);
 app.use('/api/categories', categories);
 app.use('/api/ratings', ratings);
+app.use('/api/images', images);
+app.use('/api/bids', bids);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

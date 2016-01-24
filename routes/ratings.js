@@ -9,7 +9,7 @@ router.use(authorize);
 
 /* Get all ratings */
 router.get('/', function (req, res) {
-    request(config.ss_rating_service + '/public/api/ratings', function (error, response, body) {
+    request(config.ss_rating_service + '/', function (error, response, body) {
         if (error)
             return res.status(error.status || 500).json(error);
         res.status(200).json(JSON.parse(body));
@@ -17,8 +17,8 @@ router.get('/', function (req, res) {
 });
 
 /* Get a single rating by it's ID */
-router.get('/:id', function (req, res) {
-    request(config.ss_rating_service + '/public/api/ratings/' + req.params.id, function (error, response, body) {
+router.get('/:id/', function (req, res) {
+    request(config.ss_rating_service + '/' + req.params.id  + '/', function (error, response, body) {
         if (error)
             return res.status(error.status || 500).json(error);
         res.status(200).json(JSON.parse(body));
@@ -27,7 +27,7 @@ router.get('/:id', function (req, res) {
 
 /* Get all ratings of a publisher */
 router.get('/pub/:id', function (req, res) {
-    request(config.ss_rating_service + '/public/api/ratings/publishers/' + req.params.id, function (error, response, body) {
+    request(config.ss_rating_service + '/ratings/publishers/' + req.params.id, function (error, response, body) {
         if (error)
             return res.status(error.status || 500).json(error);
         res.status(200).json(JSON.parse(body));
@@ -36,7 +36,7 @@ router.get('/pub/:id', function (req, res) {
 
 /* Get all ratings of a recipient */
 router.get('/rec/:id', function (req, res) {
-    request(config.ss_rating_service + '/public/api/ratings/recipients/' + req.params.id, function (error, response, body) {
+    request(config.ss_rating_service + '/ratings/recipients/' + req.params.id, function (error, response, body) {
         if (error)
             return res.status(error.status || 500).json(error);
         res.status(200).json(JSON.parse(body));
@@ -46,7 +46,7 @@ router.get('/rec/:id', function (req, res) {
 /* Post a new Rating about a user */
 router.post('/create', function (req, res) {
     request({
-        url: config.ss_rating_service + '/public/api/ratings/create',
+        url: config.ss_rating_service + '/ratings/create',
         qs: {from: 'api-gateway', time: +new Date()},
         method: 'POST',
         json: true,
@@ -61,7 +61,7 @@ router.post('/create', function (req, res) {
 
 /* Delete a rating by it's iD */
 router.delete('/:id', function (req, res) {
-    request.del(config.ss_rating_service + '/public/api/ratings/delete/' + req.params.id, function (error, response, body) {
+    request.del(config.ss_rating_service + '/ratings/delete/' + req.params.id, function (error, response, body) {
         if (error)
             return res.status(error.status || 500).json(error);
         res.status(200).json(JSON.parse(body));

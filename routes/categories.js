@@ -4,9 +4,9 @@ var express = require('express'),
     authorize = require('../authorization'),
     router = express.Router();
 
-/* GET single category by ID */
+/* GET get all categories */
 router.get('/', function (req, res) {
-    request(config.ss_category_service + '/public/api/categories', function (error, response, body) {
+    request(config.ss_category_service, function (error, response, body) {
         if (error)
             return res.status(error.status || 500).json(error);
         res.status(200).json(JSON.parse(body));
@@ -15,7 +15,7 @@ router.get('/', function (req, res) {
 
 /* GET single category by ID */
 router.get('/:id', function (req, res) {
-    request(config.ss_category_service + '/public/api/categories/' + req.params.id, function (error, response, body) {
+    request(config.ss_category_service + '/' + req.params.id, function (error, response, body) {
         if (error)
             return res.status(error.status || 500).json(error);
         res.status(200).json(JSON.parse(body));
@@ -28,7 +28,7 @@ router.use(authorize);
 /* Create a new Category */
 router.post('/create', function (req, res) {
     request({
-        url: config.ss_category_service + '/public/api/user/categories',
+        url: config.ss_category_service,
         qs: {from: 'api-gateway', time: +new Date()},
         method: 'POST',
         json: true,
@@ -44,7 +44,7 @@ router.post('/create', function (req, res) {
 /* Update Category */
 router.put('/:id', function (req, res) {
     request({
-        url: config.ss_category_service + '/public/api/user/categories/' + req.params.id,
+        url: config.ss_category_service + '/' + req.params.id,
         qs: {from: 'api-gateway', time: +new Date()},
         method: 'PUT',
         json: true,
@@ -59,7 +59,7 @@ router.put('/:id', function (req, res) {
 
 /* Delete a Category by ID */
 router.delete('/:id', function (req, res) {
-    request.del(config.ss_category_service + '/public/api/categories/' + req.params.id, function (error, response, body) {
+    request.del(config.ss_category_service + '/' + req.params.id, function (error, response, body) {
         if (error)
             return res.status(error.status || 500).json(error);
         res.status(200).json(JSON.parse(body));
